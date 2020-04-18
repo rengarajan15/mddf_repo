@@ -1,0 +1,18 @@
+{
+	"name": "stage1_totalcase_trggr",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/mddfroot/blobs/source/totalcases",
+			"blobPathEndsWith": ".csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/78e5420a-a2c2-4b90-a0fb-63f8606cc913/resourceGroups/POC/providers/Microsoft.Storage/storageAccounts/mddfadls",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}
