@@ -123,6 +123,52 @@
 					"referenceName": "mddf_hdinsight_conn",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "trigger_creation",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "mddf_rawhiveloading",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "trigger_creation",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"TriggerLoc": {
+							"value": "@activity('mddf_ParamsLookup').output.value[0].triggerLoc",
+							"type": "Expression"
+						},
+						"FileNamePrefix": {
+							"value": "@first(split(last(split(activity('mddf_SanityCheck').output.map.fullFilename,'/')),'.'))",
+							"type": "Expression"
+						},
+						"SourcePath": {
+							"value": "@activity('mddf_ParamsLookup').output.value[0].curationSrcPath",
+							"type": "Expression"
+						},
+						"TargetPath": {
+							"value": "@activity('mddf_ParamsLookup').output.value[0].curationDestPath",
+							"type": "Expression"
+						},
+						"SourceTable": {
+							"value": "@activity('mddf_ParamsLookup').output.value[0].srcTbl",
+							"type": "Expression"
+						},
+						"TargetTable": {
+							"value": "@activity('mddf_ParamsLookup').output.value[0].tgtTbl",
+							"type": "Expression"
+						}
+					}
+				}
 			}
 		],
 		"parameters": {
