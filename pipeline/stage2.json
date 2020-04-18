@@ -1,0 +1,55 @@
+{
+	"name": "stage2",
+	"properties": {
+		"activities": [
+			{
+				"name": "stage2Paramlookup",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "params_DataSet",
+						"type": "DatasetReference",
+						"parameters": {
+							"paramFilePath": {
+								"value": "\t\n@pipeline().parameters.ParamPath",
+								"type": "Expression"
+							},
+							"paramFileName": {
+								"value": "@pipeline().parameters.ParamName",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"ParamPath": {
+				"type": "string"
+			},
+			"ParamName": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
