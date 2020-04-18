@@ -1,0 +1,43 @@
+{
+	"name": "mailTrigger",
+	"properties": {
+		"activities": [
+			{
+				"name": "mailer",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-15.southeastasia.logic.azure.com:443/workflows/3fe33502e0e549f18ec85a1df987e35d/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=bXpVm43XSvfIWmJFsUOXSnVxu_Uyr9zukEXx9Kf4_kY",
+					"method": "POST",
+					"body": {
+						"DataFactoryName": "@{pipeline().DataFactory}",
+						"PipelineName": "@{pipeline().Pipeline}",
+						"Subject": "@{pipeline().parameters.Subject}",
+						"ErrorMessage": "@{pipeline().parameters.ErrorMessage}",
+						"EmailTo": "@pipeline().parameters.EmailTo"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"EmailTo": {
+				"type": "string"
+			},
+			"Subject": {
+				"type": "string"
+			},
+			"Message": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
