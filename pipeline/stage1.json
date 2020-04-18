@@ -169,6 +169,31 @@
 						}
 					}
 				}
+			},
+			{
+				"name": "mailTrigger",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "trigger_creation",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "mailTrigger",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"EmailTo": "yuhajobs@gmail.com",
+						"Subject": "Raw Ingestion Success",
+						"Message": "@pipeline().TriggerName"
+					}
+				}
 			}
 		],
 		"parameters": {
