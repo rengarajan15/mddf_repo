@@ -236,7 +236,7 @@
 				"annotations": [],
 				"type": "HDInsight",
 				"typeProperties": {
-					"clusterUri": "https://mddfSparkCluster1.azurehdinsight.net",
+					"clusterUri": "https://mddfSparkCluster.azurehdinsight.net",
 					"userName": "[parameters('mddf_hdinsight_conn_properties_typeProperties_userName')]",
 					"password": {
 						"type": "SecureString",
