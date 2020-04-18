@@ -83,7 +83,14 @@
 			{
 				"name": "mddf_rawhiveloading",
 				"type": "HDInsightHive",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "mddf_ParamsLookup",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -93,7 +100,24 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"scriptPath": ""
+					"scriptPath": {
+						"value": "@activity('mddf_ParamsLookup').output.value[0].hiveLoc",
+						"type": "Expression"
+					},
+					"defines": {
+						"srcfilelocation": {
+							"value": "@concat(activity('mddf_ParamsLookup').output.value[0].hiveSourcePath,'/',pipeline().parameters.FileName)",
+							"type": "Expression"
+						},
+						"loaddate": {
+							"value": "@formatDateTime(utcnow(),'yyyy-MM-dd')",
+							"type": "Expression"
+						}
+					},
+					"scriptLinkedService": {
+						"referenceName": "mddf_ADLS_conn",
+						"type": "LinkedServiceReference"
+					}
 				},
 				"linkedServiceName": {
 					"referenceName": "mddf_hdinsight_conn",
