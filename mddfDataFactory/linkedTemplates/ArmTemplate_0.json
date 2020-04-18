@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'mddf_ADLS_conn'"
 		},
+		"mddf_blob_conn_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'mddf_blob_conn'"
+		},
 		"mddf_sanitycheck_conn_functionKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'mddf_sanitycheck_conn'"
@@ -44,6 +48,18 @@
 			"defaultValue": "totalcases_params.csv"
 		},
 		"stage1_totalcase_trggr_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/78e5420a-a2c2-4b90-a0fb-63f8606cc913/resourceGroups/POC/providers/Microsoft.Storage/storageAccounts/mddfadls"
+		},
+		"stage2_trggr_properties_stage2_parameters_ParamPath": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"stage2_trggr_properties_stage2_parameters_ParamName": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"stage2_trggr_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/78e5420a-a2c2-4b90-a0fb-63f8606cc913/resourceGroups/POC/providers/Microsoft.Storage/storageAccounts/mddfadls"
 		}
@@ -165,6 +181,19 @@
 						"type": "SecureString",
 						"value": "[parameters('mddf_ADLS_conn_accountKey')]"
 					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/mddf_blob_conn')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('mddf_blob_conn_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -484,6 +513,107 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/stage2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "stage2ParamsLookup",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "params_DataSet",
+								"type": "DatasetReference",
+								"parameters": {
+									"paramFilePath": {
+										"value": "\t\n@pipeline().parameters.ParamPath",
+										"type": "Expression"
+									},
+									"paramFileName": {
+										"value": "@pipeline().parameters.ParamName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "mddf_sparkactivity",
+						"type": "HDInsightSpark",
+						"dependsOn": [
+							{
+								"activity": "stage2ParamsLookup",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"rootPath": "jars",
+							"entryFilePath": "azureCuration-1.0-SNAPSHOT.jar",
+							"arguments": [
+								"@activity('stage2ParamsLookup').output.value[0].srcTbl",
+								"@activity('stage2ParamsLookup').output.value[0].tgtTbl",
+								"@activity('stage2ParamsLookup').output.value[0].tgtPath",
+								"@formatDateTime(utcnow(),'yyyy-MM-dd')"
+							],
+							"className": "com.prad.legend.blooper",
+							"sparkJobLinkedService": {
+								"referenceName": "mddf_blob_conn",
+								"type": "LinkedServiceReference"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "mddf_hdinsight_conn",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"parameters": {
+					"ParamPath": {
+						"type": "string"
+					},
+					"ParamName": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/params_DataSet')]",
+				"[concat(variables('factoryId'), '/linkedServices/mddf_blob_conn')]",
+				"[concat(variables('factoryId'), '/linkedServices/mddf_hdinsight_conn')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/stage1_totalcase_trggr')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -517,6 +647,40 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/stage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/stage2_trggr')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "stage2",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"ParamPath": "[parameters('stage2_trggr_properties_stage2_parameters_ParamPath')]",
+							"ParamName": "[parameters('stage2_trggr_properties_stage2_parameters_ParamName')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/mddfroot/blobs/triggers",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('stage2_trggr_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/stage2')]"
 			]
 		}
 	]

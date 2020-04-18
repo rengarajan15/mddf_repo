@@ -8,6 +8,9 @@
 		"mddf_ADLS_conn_accountKey": {
 			"value": ""
 		},
+		"mddf_blob_conn_connectionString": {
+			"value": ""
+		},
 		"mddf_hdinsight_conn_password": {
 			"value": ""
 		},
@@ -33,6 +36,15 @@
 			"value": "totalcases_params.csv"
 		},
 		"stage1_totalcase_trggr_properties_typeProperties_scope": {
+			"value": "/subscriptions/78e5420a-a2c2-4b90-a0fb-63f8606cc913/resourceGroups/POC/providers/Microsoft.Storage/storageAccounts/mddfadls"
+		},
+		"stage2_trggr_properties_stage2_parameters_ParamPath": {
+			"value": "@triggerBody().folderPath"
+		},
+		"stage2_trggr_properties_stage2_parameters_ParamName": {
+			"value": "@triggerBody().fileName"
+		},
+		"stage2_trggr_properties_typeProperties_scope": {
 			"value": "/subscriptions/78e5420a-a2c2-4b90-a0fb-63f8606cc913/resourceGroups/POC/providers/Microsoft.Storage/storageAccounts/mddfadls"
 		}
 	}
