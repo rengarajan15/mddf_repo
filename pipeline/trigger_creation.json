@@ -1,0 +1,49 @@
+{
+	"name": "trigger_creation",
+	"properties": {
+		"activities": [
+			{
+				"name": "mddf_triggergeneration",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-08.southeastasia.logic.azure.com:443/workflows/dc0b9bdb0b3c4330ba05b4a858b7f196/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ME5KePpmNRKsPCnxPFVtrHWZ6nauD4JKY2fmYEd2ttU",
+					"method": "POST",
+					"body": {
+						"value": "{\"SourcePath\":\"@{pipeline().parameters.SourcePath}\",\"TargetPath\":\"@{pipeline().parameters.TargetPath}\",\"SourceTable\":\"@{pipeline().parameters.SourceTable}\",\"TargetTable\":\"@{pipeline().parameters.TargetTable}\",\"TriggerLoc\":\"@{pipeline().parameters.TriggerLoc}\",\"FileNamePrefix\":\"@{pipeline().parameters.FileNamePrefix}\"}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"TriggerLoc": {
+				"type": "string"
+			},
+			"FileNamePrefix": {
+				"type": "string"
+			},
+			"SourcePath": {
+				"type": "string"
+			},
+			"TargetPath": {
+				"type": "string"
+			},
+			"SourceTable": {
+				"type": "string"
+			},
+			"TargetTable": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
