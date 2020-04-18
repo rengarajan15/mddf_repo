@@ -21,7 +21,7 @@
 						"DataFactoryName": "@{pipeline().DataFactory}",
 						"PipelineName": "@{pipeline().Pipeline}",
 						"Subject": "@{pipeline().parameters.Subject}",
-						"ErrorMessage": "@{pipeline().parameters.ErrorMessage}",
+						"Message": "@{pipeline().parameters.Message}",
 						"EmailTo": "@pipeline().parameters.EmailTo"
 					}
 				}
