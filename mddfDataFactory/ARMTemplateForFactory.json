@@ -367,7 +367,8 @@
 								"type": "DelimitedTextSource",
 								"storeSettings": {
 									"type": "AzureBlobFSReadSettings",
-									"recursive": true
+									"recursive": false,
+									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
 									"type": "DelimitedTextReadSettings"
@@ -378,7 +379,7 @@
 								"type": "DatasetReference",
 								"parameters": {
 									"paramFilePath": {
-										"value": "\t\n@pipeline().parameters.ParamPath",
+										"value": "@pipeline().parameters.ParamPath",
 										"type": "Expression"
 									},
 									"paramFileName": {
@@ -386,7 +387,8 @@
 										"type": "Expression"
 									}
 								}
-							}
+							},
+							"firstRowOnly": false
 						}
 					},
 					{
