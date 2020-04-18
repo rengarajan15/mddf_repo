@@ -1,0 +1,466 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "mddfDataFactory"
+		},
+		"mddf_ADLS_conn_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'mddf_ADLS_conn'"
+		},
+		"mddf_hdinsight_conn_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'mddf_hdinsight_conn'"
+		},
+		"mddf_sanitycheck_conn_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'mddf_sanitycheck_conn'"
+		},
+		"mddf_ADLS_conn_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://mddfadls.dfs.core.windows.net"
+		},
+		"mddf_hdinsight_conn_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "admin"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/mailTrigger')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "mailer",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://prod-15.southeastasia.logic.azure.com:443/workflows/3fe33502e0e549f18ec85a1df987e35d/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=bXpVm43XSvfIWmJFsUOXSnVxu_Uyr9zukEXx9Kf4_kY",
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"DataFactoryName": "@{pipeline().DataFactory}",
+								"PipelineName": "@{pipeline().Pipeline}",
+								"Subject": "@{pipeline().parameters.Subject}",
+								"Message": "@{pipeline().parameters.Message}",
+								"EmailTo": "@pipeline().parameters.EmailTo"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"EmailTo": {
+						"type": "string"
+					},
+					"Subject": {
+						"type": "string"
+					},
+					"Message": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/stage1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "mddf_SanityCheck",
+						"type": "AzureFunctionActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"functionName": "BlobValidator",
+							"method": "GET",
+							"headers": {
+								"fileName": {
+									"value": "@pipeline().parameters.FileName",
+									"type": "Expression"
+								},
+								"filePath": {
+									"value": "@pipeline().parameters.FilePath",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "mddf_sanitycheck_conn",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "mddf_ParamsLookup",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "mddf_SanityCheck",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "params_DataSet",
+								"type": "DatasetReference",
+								"parameters": {
+									"paramFilePath": {
+										"value": "@pipeline().parameters.ParamFilePath",
+										"type": "Expression"
+									},
+									"paramFileName": {
+										"value": "@pipeline().parameters.ParamFileName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "mddf_rawhiveloading",
+						"type": "HDInsightHive",
+						"dependsOn": [
+							{
+								"activity": "mddf_ParamsLookup",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"scriptPath": {
+								"value": "@activity('mddf_ParamsLookup').output.value[0].hiveLoc",
+								"type": "Expression"
+							},
+							"defines": {
+								"srcfilelocation": {
+									"value": "@concat(activity('mddf_ParamsLookup').output.value[0].hiveSourcePath,'/',pipeline().parameters.FileName)",
+									"type": "Expression"
+								},
+								"loaddate": {
+									"value": "@formatDateTime(utcnow(),'yyyy-MM-dd')",
+									"type": "Expression"
+								}
+							},
+							"scriptLinkedService": {
+								"referenceName": "mddf_ADLS_conn",
+								"type": "LinkedServiceReference"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "mddf_hdinsight_conn",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "trigger_creation",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "mddf_rawhiveloading",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "trigger_creation",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"TriggerLoc": {
+									"value": "@activity('mddf_ParamsLookup').output.value[0].triggerLoc",
+									"type": "Expression"
+								},
+								"FileNamePrefix": {
+									"value": "@first(split(last(split(activity('mddf_SanityCheck').output.map.fullFilename,'/')),'.'))",
+									"type": "Expression"
+								},
+								"SourcePath": {
+									"value": "@activity('mddf_ParamsLookup').output.value[0].curationSrcPath",
+									"type": "Expression"
+								},
+								"TargetPath": {
+									"value": "@activity('mddf_ParamsLookup').output.value[0].curationDestPath",
+									"type": "Expression"
+								},
+								"SourceTable": {
+									"value": "@activity('mddf_ParamsLookup').output.value[0].srcTbl",
+									"type": "Expression"
+								},
+								"TargetTable": {
+									"value": "@activity('mddf_ParamsLookup').output.value[0].tgtTbl",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "mailTrigger",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "trigger_creation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "mailTrigger",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"EmailTo": "yuhajobs@gmail.com",
+								"Subject": "Raw Ingestion Success",
+								"Message": {
+									"value": "@pipeline().TriggerName",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"parameters": {
+					"FileName": {
+						"type": "string"
+					},
+					"FilePath": {
+						"type": "string"
+					},
+					"ParamFilePath": {
+						"type": "string"
+					},
+					"ParamFileName": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/mddf_sanitycheck_conn')]",
+				"[concat(variables('factoryId'), '/datasets/params_DataSet')]",
+				"[concat(variables('factoryId'), '/linkedServices/mddf_ADLS_conn')]",
+				"[concat(variables('factoryId'), '/linkedServices/mddf_hdinsight_conn')]",
+				"[concat(variables('factoryId'), '/pipelines/trigger_creation')]",
+				"[concat(variables('factoryId'), '/pipelines/mailTrigger')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger_creation')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "mddf_triggergeneration",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://prod-08.southeastasia.logic.azure.com:443/workflows/dc0b9bdb0b3c4330ba05b4a858b7f196/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ME5KePpmNRKsPCnxPFVtrHWZ6nauD4JKY2fmYEd2ttU",
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"value": "{\"SourcePath\":\"@{pipeline().parameters.SourcePath}\",\"TargetPath\":\"@{pipeline().parameters.TargetPath}\",\"SourceTable\":\"@{pipeline().parameters.SourceTable}\",\"TargetTable\":\"@{pipeline().parameters.TargetTable}\",\"TriggerLoc\":\"@{pipeline().parameters.TriggerLoc}\",\"FileNamePrefix\":\"@{pipeline().parameters.FileNamePrefix}\"}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"TriggerLoc": {
+						"type": "string"
+					},
+					"FileNamePrefix": {
+						"type": "string"
+					},
+					"SourcePath": {
+						"type": "string"
+					},
+					"TargetPath": {
+						"type": "string"
+					},
+					"SourceTable": {
+						"type": "string"
+					},
+					"TargetTable": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/params_DataSet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "mddf_ADLS_conn",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"paramFilePath": {
+						"type": "string"
+					},
+					"paramFileName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().paramFileName",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().paramFilePath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/mddf_ADLS_conn')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/mddf_ADLS_conn')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('mddf_ADLS_conn_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('mddf_ADLS_conn_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/mddf_hdinsight_conn')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HDInsight",
+				"typeProperties": {
+					"clusterUri": "https://mddfSparkCluster1.azurehdinsight.net",
+					"userName": "[parameters('mddf_hdinsight_conn_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('mddf_hdinsight_conn_password')]"
+					},
+					"isEspEnabled": false,
+					"fileSystem": "clusterlogs",
+					"linkedServiceName": {
+						"referenceName": "mddf_ADLS_conn",
+						"type": "LinkedServiceReference"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/mddf_ADLS_conn')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/mddf_sanitycheck_conn')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFunction",
+				"typeProperties": {
+					"functionAppUrl": "https://mddfsanitycheck.azurewebsites.net",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "[parameters('mddf_sanitycheck_conn_functionKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

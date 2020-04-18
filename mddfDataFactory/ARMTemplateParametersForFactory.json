@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "mddfDataFactory"
+		},
+		"mddf_ADLS_conn_accountKey": {
+			"value": ""
+		},
+		"mddf_hdinsight_conn_password": {
+			"value": ""
+		},
+		"mddf_sanitycheck_conn_functionKey": {
+			"value": ""
+		},
+		"mddf_ADLS_conn_properties_typeProperties_url": {
+			"value": "https://mddfadls.dfs.core.windows.net"
+		},
+		"mddf_hdinsight_conn_properties_typeProperties_userName": {
+			"value": "admin"
+		}
+	}
+}
