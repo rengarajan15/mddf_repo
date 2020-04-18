@@ -32,6 +32,59 @@
 					"referenceName": "mddf_sanitycheck_conn",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "mddf_ParamsLookup",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "mddf_SanityCheck",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "params_DataSet",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "mddf_rawhiveloading",
+				"type": "HDInsightHive",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"scriptPath": ""
+				}
 			}
 		],
 		"parameters": {
