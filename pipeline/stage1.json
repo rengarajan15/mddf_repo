@@ -13,7 +13,11 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "mddf_sanitycheck_conn",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"parameters": {
