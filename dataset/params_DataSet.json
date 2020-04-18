@@ -1,0 +1,37 @@
+{
+	"name": "params_DataSet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "mddf_ADLS_conn",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"paramFilePath": {
+				"type": "string"
+			},
+			"paramFileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().paramFileName",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().paramFilePath",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
