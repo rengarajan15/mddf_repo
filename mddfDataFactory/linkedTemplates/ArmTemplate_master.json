@@ -27,6 +27,26 @@
 			"type": "string",
 			"defaultValue": "admin"
 		},
+		"stage1_totalcase_trggr_properties_stage1_parameters_FileName": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"stage1_totalcase_trggr_properties_stage1_parameters_FilePath": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"stage1_totalcase_trggr_properties_stage1_parameters_ParamFilePath": {
+			"type": "string",
+			"defaultValue": "mddfroot/params"
+		},
+		"stage1_totalcase_trggr_properties_stage1_parameters_ParamFileName": {
+			"type": "string",
+			"defaultValue": "totalcases_params.csv"
+		},
+		"stage1_totalcase_trggr_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/78e5420a-a2c2-4b90-a0fb-63f8606cc913/resourceGroups/POC/providers/Microsoft.Storage/storageAccounts/mddfadls"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -68,6 +88,21 @@
 					},
 					"mddf_hdinsight_conn_properties_typeProperties_userName": {
 						"value": "[parameters('mddf_hdinsight_conn_properties_typeProperties_userName')]"
+					},
+					"stage1_totalcase_trggr_properties_stage1_parameters_FileName": {
+						"value": "[parameters('stage1_totalcase_trggr_properties_stage1_parameters_FileName')]"
+					},
+					"stage1_totalcase_trggr_properties_stage1_parameters_FilePath": {
+						"value": "[parameters('stage1_totalcase_trggr_properties_stage1_parameters_FilePath')]"
+					},
+					"stage1_totalcase_trggr_properties_stage1_parameters_ParamFilePath": {
+						"value": "[parameters('stage1_totalcase_trggr_properties_stage1_parameters_ParamFilePath')]"
+					},
+					"stage1_totalcase_trggr_properties_stage1_parameters_ParamFileName": {
+						"value": "[parameters('stage1_totalcase_trggr_properties_stage1_parameters_ParamFileName')]"
+					},
+					"stage1_totalcase_trggr_properties_typeProperties_scope": {
+						"value": "[parameters('stage1_totalcase_trggr_properties_typeProperties_scope')]"
 					}
 				}
 			},
