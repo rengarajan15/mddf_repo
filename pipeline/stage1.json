@@ -84,6 +84,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"scriptPath": ""
+				},
+				"linkedServiceName": {
+					"referenceName": "mddf_hdinsight_conn",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
