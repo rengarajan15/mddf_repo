@@ -315,8 +315,8 @@
 								"type": "DelimitedTextSource",
 								"storeSettings": {
 									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFileName": "*"
+									"recursive": false,
+									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
 									"type": "DelimitedTextReadSettings"
@@ -335,7 +335,8 @@
 										"type": "Expression"
 									}
 								}
-							}
+							},
+							"firstRowOnly": false
 						}
 					},
 					{
