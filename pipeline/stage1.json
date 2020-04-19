@@ -190,7 +190,7 @@
 					},
 					"waitOnCompletion": true,
 					"parameters": {
-						"EmailTo": "yuhajobs@gmail.com",
+						"EmailTo": "rengadata@outlook.com",
 						"Subject": "Raw Ingestion Success",
 						"Message": {
 							"value": "@pipeline().TriggerName",
