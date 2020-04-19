@@ -91,20 +91,20 @@
 							"method": "POST",
 							"headers": {},
 							"body": {
-								"value": "{\"DataFactoryName\":\"@{pipeline().DataFactory}\",\"PipelineName\":\"@{pipeline().Pipeline}\",\"Subject\":\"@{pipeline().parameters.Subject}\",\"Message\":\"@{pipeline().parameters.Message}\",\"EmailTo\":\"@pipeline().parameters.EmailTo\"}",
+								"value": "{\"DataFactoryName\":\"@{pipeline().DataFactory}\",\"PipelineName\":\"@{pipeline().Pipeline}\",\"Subject\":\"@{pipeline().parameters.Subject}\",\"Message\":\"@{pipeline().parameters.Message}\",\"EmailTo\":\"@{pipeline().parameters.EmailTo}\"}",
 								"type": "Expression"
 							}
 						}
 					}
 				],
 				"parameters": {
-					"EmailTo": {
-						"type": "string"
-					},
 					"Subject": {
 						"type": "string"
 					},
 					"Message": {
+						"type": "string"
+					},
+					"EmailTo": {
 						"type": "string"
 					}
 				},
@@ -474,7 +474,7 @@
 							},
 							"waitOnCompletion": true,
 							"parameters": {
-								"EmailTo": "yuhajobs@gmail.com",
+								"EmailTo": "rengadata@outlook.com",
 								"Subject": "Raw Ingestion Success",
 								"Message": {
 									"value": "@pipeline().TriggerName",
