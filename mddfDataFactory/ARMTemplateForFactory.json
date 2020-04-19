@@ -31,6 +31,26 @@
 			"type": "string",
 			"defaultValue": "admin"
 		},
+		"stage1_IndividualDetails_trggr_properties_stage1_parameters_FileName": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"stage1_IndividualDetails_trggr_properties_stage1_parameters_FilePath": {
+			"type": "string",
+			"defaultValue": "@triggerBody().folderPath"
+		},
+		"stage1_IndividualDetails_trggr_properties_stage1_parameters_ParamFilePath": {
+			"type": "string",
+			"defaultValue": "mddfroot/params "
+		},
+		"stage1_IndividualDetails_trggr_properties_stage1_parameters_ParamFileName": {
+			"type": "string",
+			"defaultValue": "individualdetails_params.csv"
+		},
+		"stage1_IndividualDetails_trggr_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/78e5420a-a2c2-4b90-a0fb-63f8606cc913/resourceGroups/POC/providers/Microsoft.Storage/storageAccounts/mddfadls"
+		},
 		"stage1_totalcase_trggr_properties_stage1_parameters_FileName": {
 			"type": "string",
 			"defaultValue": "@triggerBody().fileName"
@@ -724,6 +744,42 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/stage1_IndividualDetails_trggr')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "stage1",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"FileName": "[parameters('stage1_IndividualDetails_trggr_properties_stage1_parameters_FileName')]",
+							"FilePath": "[parameters('stage1_IndividualDetails_trggr_properties_stage1_parameters_FilePath')]",
+							"ParamFilePath": "[parameters('stage1_IndividualDetails_trggr_properties_stage1_parameters_ParamFilePath')]",
+							"ParamFileName": "[parameters('stage1_IndividualDetails_trggr_properties_stage1_parameters_ParamFileName')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/mddfroot/blobs/source/IndividualDetails",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('stage1_IndividualDetails_trggr_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/stage1')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/stage1_totalcase_trggr')]",

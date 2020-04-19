@@ -23,6 +23,21 @@
 		"mddf_hdinsight_conn_properties_typeProperties_userName": {
 			"value": "admin"
 		},
+		"stage1_IndividualDetails_trggr_properties_stage1_parameters_FileName": {
+			"value": "@triggerBody().fileName"
+		},
+		"stage1_IndividualDetails_trggr_properties_stage1_parameters_FilePath": {
+			"value": "@triggerBody().folderPath"
+		},
+		"stage1_IndividualDetails_trggr_properties_stage1_parameters_ParamFilePath": {
+			"value": "mddfroot/params "
+		},
+		"stage1_IndividualDetails_trggr_properties_stage1_parameters_ParamFileName": {
+			"value": "individualdetails_params.csv"
+		},
+		"stage1_IndividualDetails_trggr_properties_typeProperties_scope": {
+			"value": "/subscriptions/78e5420a-a2c2-4b90-a0fb-63f8606cc913/resourceGroups/POC/providers/Microsoft.Storage/storageAccounts/mddfadls"
+		},
 		"stage1_totalcase_trggr_properties_stage1_parameters_FileName": {
 			"value": "@triggerBody().fileName"
 		},
