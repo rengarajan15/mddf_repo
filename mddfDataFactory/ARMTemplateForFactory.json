@@ -91,11 +91,8 @@
 							"method": "POST",
 							"headers": {},
 							"body": {
-								"DataFactoryName": "@{pipeline().DataFactory}",
-								"PipelineName": "@{pipeline().Pipeline}",
-								"Subject": "@{pipeline().parameters.Subject}",
-								"Message": "@{pipeline().parameters.Message}",
-								"EmailTo": "@pipeline().parameters.EmailTo"
+								"value": "{\"DataFactoryName\":\"@{pipeline().DataFactory}\",\"PipelineName\":\"@{pipeline().Pipeline}\",\"Subject\":\"@{pipeline().parameters.Subject}\",\"Message\":\"@{pipeline().parameters.Message}\",\"EmailTo\":\"@pipeline().parameters.EmailTo\"}",
+								"type": "Expression"
 							}
 						}
 					}
