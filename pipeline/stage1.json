@@ -226,6 +226,34 @@
 						"EmailTo": "rengadata@outlook.com"
 					}
 				}
+			},
+			{
+				"name": "mailTrigger2",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "mddf_rawhiveloading",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "mailTrigger",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"Subject": "Raw Hive Ingestion Failure",
+						"Message": {
+							"value": "@activity('mddf_rawhiveloading').Output ",
+							"type": "Expression"
+						},
+						"EmailTo": "rengadata@outlook.com"
+					}
+				}
 			}
 		],
 		"parameters": {
