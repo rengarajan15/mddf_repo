@@ -81,6 +81,62 @@
 					"referenceName": "mddf_hdinsight_conn",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "mailTrigger2",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "mddf_sparkactivity",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "mailTrigger",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"Subject": "Curation Ingestion Failure",
+						"Message": {
+							"value": "@activity('mddf_sparkactivity').output",
+							"type": "Expression"
+						},
+						"EmailTo": "rengadata@outlook.com"
+					}
+				}
+			},
+			{
+				"name": "mailTrigger",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "mddf_sparkactivity",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "mailTrigger",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"EmailTo": "rengadata@outlook.com",
+						"Subject": "Curation Ingestion Success",
+						"Message": {
+							"value": "Job Completed Successfully",
+							"type": "Expression"
+						}
+					}
+				}
 			}
 		],
 		"parameters": {
