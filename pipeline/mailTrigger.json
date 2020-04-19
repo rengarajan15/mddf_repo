@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://prod-15.southeastasia.logic.azure.com:443/workflows/3fe33502e0e549f18ec85a1df987e35d/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=bXpVm43XSvfIWmJFsUOXSnVxu_Uyr9zukEXx9Kf4_kY",
+					"url": "https://prod-17.southeastasia.logic.azure.com:443/workflows/5739fd7c198d4c1395979f2bf9731868/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=kIIXZQsPuNHSO6KnJ-MF_ZGGlh40gWXOGQmQh5c7es8",
 					"method": "POST",
 					"body": {
 						"DataFactoryName": "@{pipeline().DataFactory}",
