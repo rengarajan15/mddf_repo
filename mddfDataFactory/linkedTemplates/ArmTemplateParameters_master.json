@@ -30,7 +30,7 @@
 			"value": "@triggerBody().folderPath"
 		},
 		"stage1_IndividualDetails_trggr_properties_stage1_parameters_ParamFilePath": {
-			"value": "mddfroot/params "
+			"value": "mddfroot/params"
 		},
 		"stage1_IndividualDetails_trggr_properties_stage1_parameters_ParamFileName": {
 			"value": "individualdetails_params.csv"

@@ -41,7 +41,7 @@
 		},
 		"stage1_IndividualDetails_trggr_properties_stage1_parameters_ParamFilePath": {
 			"type": "string",
-			"defaultValue": "mddfroot/params "
+			"defaultValue": "mddfroot/params"
 		},
 		"stage1_IndividualDetails_trggr_properties_stage1_parameters_ParamFileName": {
 			"type": "string",
