@@ -198,6 +198,34 @@
 						}
 					}
 				}
+			},
+			{
+				"name": "mailTrigger1",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "mddf_SanityCheck",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "mailTrigger",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"Subject": "Sanity check Failure",
+						"Message": {
+							"value": "@activity('mddf_SanityCheck').Error.Message",
+							"type": "Expression"
+						},
+						"EmailTo": "rengadata@outlook.com"
+					}
+				}
 			}
 		],
 		"parameters": {
