@@ -193,7 +193,7 @@
 						"EmailTo": "rengadata@outlook.com",
 						"Subject": "Raw Ingestion Success",
 						"Message": {
-							"value": "@pipeline().TriggerName",
+							"value": "Job Completed Successfully",
 							"type": "Expression"
 						}
 					}
