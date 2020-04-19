@@ -12,7 +12,7 @@
 				"parameters": {
 					"FileName": "@triggerBody().fileName",
 					"FilePath": "@triggerBody().folderPath",
-					"ParamFilePath": "mddfroot/params ",
+					"ParamFilePath": "mddfroot/params",
 					"ParamFileName": "individualdetails_params.csv"
 				}
 			}
