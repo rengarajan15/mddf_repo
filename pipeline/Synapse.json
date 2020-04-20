@@ -40,8 +40,8 @@
 						"mappings": [
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 1
+									"name": "id",
+									"type": "String"
 								},
 								"sink": {
 									"name": "id",
@@ -50,8 +50,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 2
+									"name": "government_id",
+									"type": "String"
 								},
 								"sink": {
 									"name": "government_id",
@@ -60,8 +60,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 3
+									"name": "diagnosed_date",
+									"type": "String"
 								},
 								"sink": {
 									"name": "diagnosed_date",
@@ -70,8 +70,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 4
+									"name": "age",
+									"type": "String"
 								},
 								"sink": {
 									"name": "age",
@@ -80,8 +80,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 5
+									"name": "gender",
+									"type": "String"
 								},
 								"sink": {
 									"name": "gender",
@@ -90,8 +90,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 6
+									"name": "detected_city",
+									"type": "String"
 								},
 								"sink": {
 									"name": "detected_city",
@@ -100,8 +100,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 7
+									"name": "detected_district",
+									"type": "String"
 								},
 								"sink": {
 									"name": "detected_district",
@@ -110,8 +110,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 8
+									"name": "detected_state",
+									"type": "String"
 								},
 								"sink": {
 									"name": "detected_state",
@@ -120,8 +120,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 9
+									"name": "nationality",
+									"type": "String"
 								},
 								"sink": {
 									"name": "nationality",
@@ -130,8 +130,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 10
+									"name": "status_change_date",
+									"type": "String"
 								},
 								"sink": {
 									"name": "status_change_date",
@@ -140,8 +140,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 11
+									"name": "notes",
+									"type": "String"
 								},
 								"sink": {
 									"name": "notes",
@@ -150,8 +150,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 12
+									"name": "2020-04-19",
+									"type": "String"
 								},
 								"sink": {
 									"name": "newdate",
