@@ -15,7 +15,7 @@
 				"fileSystem": "mddfroot"
 			},
 			"columnDelimiter": ",",
-			"escapeChar": "\\",
+			"escapeChar": "",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
