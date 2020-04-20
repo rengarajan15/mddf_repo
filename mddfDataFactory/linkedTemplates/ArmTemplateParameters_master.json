@@ -17,6 +17,9 @@
 		"mddf_sanitycheck_conn_functionKey": {
 			"value": ""
 		},
+		"AzureSynapseAnalytics_connectionString": {
+			"value": ""
+		},
 		"mddf_ADLS_conn_properties_typeProperties_url": {
 			"value": "https://mddfadls.dfs.core.windows.net"
 		},

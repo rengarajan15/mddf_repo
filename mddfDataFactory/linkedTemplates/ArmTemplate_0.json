@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'mddf_sanitycheck_conn'"
 		},
+		"AzureSynapseAnalytics_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSynapseAnalytics'"
+		},
 		"mddf_hdinsight_conn_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'mddf_hdinsight_conn'"
@@ -233,6 +237,19 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalytics')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSynapseAnalytics_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/params_DataSet')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -298,6 +315,142 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/mddf_ADLS_conn')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Synapse_sourceDS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "mddf_ADLS_conn",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "part-00000-cff92e61-2c81-427a-84bc-3cf8320c1026-c000.csv",
+						"folderPath": "target/curation/individualdetails/load_date=2020-04-19",
+						"fileSystem": "mddfroot"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "",
+					"firstRowAsHeader": true,
+					"quoteChar": ""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/mddf_ADLS_conn')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalyticsTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "government_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "diagnosed_date",
+						"type": "nvarchar"
+					},
+					{
+						"name": "age",
+						"type": "nvarchar"
+					},
+					{
+						"name": "gender",
+						"type": "nvarchar"
+					},
+					{
+						"name": "detected_city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "detected_district",
+						"type": "nvarchar"
+					},
+					{
+						"name": "detected_state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "nationality",
+						"type": "nvarchar"
+					},
+					{
+						"name": "status_change_date",
+						"type": "nvarchar"
+					},
+					{
+						"name": "notes",
+						"type": "nvarchar"
+					},
+					{
+						"name": "newdate",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "ADF_ind_details"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSynapseAnalytics')]"
 			]
 		},
 		{
@@ -743,6 +896,194 @@
 				"[concat(variables('factoryId'), '/linkedServices/mddf_blob_conn')]",
 				"[concat(variables('factoryId'), '/linkedServices/mddf_hdinsight_conn')]",
 				"[concat(variables('factoryId'), '/pipelines/mailTrigger')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Synapse')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlDWSink",
+								"allowPolyBase": true,
+								"polyBaseSettings": {
+									"rejectValue": 0,
+									"rejectType": "value",
+									"useTypeDefault": true
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "government_id",
+											"type": "String"
+										},
+										"sink": {
+											"name": "government_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "diagnosed_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "diagnosed_date",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "age",
+											"type": "String"
+										},
+										"sink": {
+											"name": "age",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "gender",
+											"type": "String"
+										},
+										"sink": {
+											"name": "gender",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "detected_city",
+											"type": "String"
+										},
+										"sink": {
+											"name": "detected_city",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "detected_district",
+											"type": "String"
+										},
+										"sink": {
+											"name": "detected_district",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "detected_state",
+											"type": "String"
+										},
+										"sink": {
+											"name": "detected_state",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "nationality",
+											"type": "String"
+										},
+										"sink": {
+											"name": "nationality",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "status_change_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "status_change_date",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "notes",
+											"type": "String"
+										},
+										"sink": {
+											"name": "notes",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2020-04-19",
+											"type": "String"
+										},
+										"sink": {
+											"name": "newdate",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Synapse_sourceDS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSynapseAnalyticsTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Synapse_sourceDS')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsTable1')]"
 			]
 		},
 		{
