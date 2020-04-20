@@ -1,0 +1,65 @@
+{
+	"name": "AzureSynapseAnalyticsTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "government_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "diagnosed_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "age",
+				"type": "nvarchar"
+			},
+			{
+				"name": "gender",
+				"type": "nvarchar"
+			},
+			{
+				"name": "detected_city",
+				"type": "nvarchar"
+			},
+			{
+				"name": "detected_district",
+				"type": "nvarchar"
+			},
+			{
+				"name": "detected_state",
+				"type": "nvarchar"
+			},
+			{
+				"name": "nationality",
+				"type": "nvarchar"
+			},
+			{
+				"name": "status_change_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "notes",
+				"type": "nvarchar"
+			},
+			{
+				"name": "newdate",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "ADF_ind_details"
+		}
+	}
+}
